@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:get_storage/get_storage.dart';
 import 'package:simaru/controllers/login_controller.dart';
+import 'package:simaru/controllers/register_controller.dart';
 import 'package:simaru/screens/login_screen.dart';
 // import 'package:simaru/screens/home_screen.dart'; // opsional nanti
 
@@ -29,6 +30,7 @@ class MainApp extends StatelessWidget {
       home: const LoginScreen(),
       initialBinding: BindingsBuilder(() {
         Get.put(LoginController());
+        Get.put(RegisterController());
       }),
     );
   }

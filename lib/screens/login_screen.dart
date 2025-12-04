@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simaru/controllers/login_controller.dart';
+import 'package:simaru/screens/register_screen.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
@@ -80,10 +81,20 @@ class LoginScreen extends GetView<LoginController> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white
+                                color: Colors.white,
                               ),
                             ),
                     ),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Text("Belum punya akun?"),
+                      TextButton(
+                        onPressed: () => Get.to(() => RegisterScreen()),
+                        child: Text("Daftar"),
+                      ),
+                    ],
                   ),
                 ],
               ),
