@@ -1,9 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:simaru/screens/home_screen.dart';
 import 'package:simaru/services/login_service.dart';
+import 'package:get_storage/get_storage.dart';
 
 class LoginController extends GetxController {
   final LoginService _service = Get.put(LoginService());
+  final box = GetStorage();
 // Observable variables
   var isLoading = false.obs;
 
@@ -28,9 +31,13 @@ class LoginController extends GetxController {
 
       if (response != null && response['accessToken'] != null) {
         // Simpan token ke GetStorage atau SharedPreferences kalau mau
-        Get.snackbar('Sukses', 'Login berhasil');
+        final token = response['accessToken'];
+        box.write('accessToken', token);
         // Navigasi ke halaman berikutnya
         // Get.offAllNamed('/home');
+        Get.offAll(() => HomeScreen());
+        Get.snackbar('Sukses', 'Login berhasil');
+
       } else {
         Get.snackbar('Gagal', 'Email atau password salah');
       }
