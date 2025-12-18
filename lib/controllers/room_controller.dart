@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 class RoomController extends GetxController {
   final RoomService _service = Get.put(RoomService());
   final box = GetStorage();
-  // Observable variables
+// Observable variables
   var isLoading = false.obs;
 
   var pickedImage = Rx<File?>(null);
@@ -27,7 +27,7 @@ class RoomController extends GetxController {
     super.onInit();
   }
 
-  Future<void> pickImage() async {
+   Future<void> pickImage() async {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       pickedImage.value = File(image.path);
@@ -44,40 +44,28 @@ class RoomController extends GetxController {
       return;
     }
 
-    final token = box.read('accessToken');
-    if (token == null) {
-      Get.snackbar("Error", "Token tidak ditemukan");
-      return;
-    }
-
     isLoading(true);
 
-    try {
-      final form = FormData({
-        'name': name,
-        'faculty_name': facultyName,
-        'capacity': capacity,
-        'photo': MultipartFile(
-          pickedImage.value!,
-          filename: pickedImage.value!.path.split('/').last,
-        ),
-      });
+    final form = FormData({
+      'name': name,
+      'faculty_name': facultyName,
+      'capacity': capacity,
+      'photo': MultipartFile(
+        pickedImage.value!,
+        filename: pickedImage.value!.path.split('/').last,
+      ),
+    });
 
-      final response = await _service.createRoom(form, token);
+    final response = await _service.createRoom(form, box.read('accessToken'));
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.back();
-        fetchRooms();
-        Get.snackbar("Sukses", "Ruangan berhasil ditambahkan");
-      } else {
-        Get.snackbar("Error", response.body?['message'] ?? "Gagal menyimpan");
-      }
-    } catch (e, s) {
-      debugPrint("CREATE ROOM ERROR: $e");
-      debugPrintStack(stackTrace: s);
-      Get.snackbar("Error", e.toString());
-    } finally {
-      isLoading(false);
+    isLoading(false);
+
+    if (response.isOk) {
+      Get.back();
+      Get.snackbar("Sukses", "Ruangan berhasil ditambahkan");
+      fetchRooms(); // refresh list
+    } else {
+      Get.snackbar("Error", response.statusText ?? "Gagal menambah ruangan");
     }
   }
 
@@ -89,11 +77,7 @@ class RoomController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await _service.getRoom(
-        box.read('accessToken'),
-        search,
-        status,
-      );
+      final response = await _service.getRoom(box.read('accessToken'),search, status);
       if (response != null) {
         List data = response['data'];
 

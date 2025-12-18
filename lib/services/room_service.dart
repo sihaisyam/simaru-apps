@@ -1,33 +1,43 @@
-import 'dart:io';
+import 'dart:convert';
+
 import 'package:get/get.dart';
-import 'package:get/get_connect/connect.dart';
+import 'package:http/http.dart' show Client;
 
-class RoomService extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.baseUrl = 'http://localhost:8000/api';
-    // httpClient.defaultContentType = 'application/json';
-    super.onInit();
+class RoomService extends GetxService {
+  Client client = Client();
+
+  Future<dynamic> getRoom(String token, String search, String status) async {
+    try {
+      final response = await client.get(
+        Uri.parse('http://127.0.0.1:8000/api/rooms?search=' + search + '&status=' + status),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return throw Exception(e);
+    }
   }
 
-  Future<Response> getRoom(String token, String search, String status) {
-    return get(
-      '/rooms?search=$search&status=$status',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-  }
-
-  Future<Response> createRoom(FormData payload, String token) {
-    return post(
-      '/rooms',
-      payload,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  Future<dynamic> createRoom(FormData payload, String token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('http://127.0.0.1:8000/api/rooms'),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      return response;
+    } catch (e) {
+      return throw Exception(e);
+    }
   }
 }
