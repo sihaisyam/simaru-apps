@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simaru/controllers/room_controller.dart';
+import 'add_room_screen.dart';
 
 class RoomScreen extends StatelessWidget {
   RoomScreen({super.key});
@@ -11,6 +12,12 @@ class RoomScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Daftar Ruangan")),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(() => AddRoomScreen());
+        },
+        child: const Icon(Icons.add),
+      ),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -23,14 +30,14 @@ class RoomScreen extends StatelessWidget {
           itemCount: controller.rooms.length,
           itemBuilder: (context, index) {
             final room = controller.rooms[index];
-            print(room['photo']);
+
             return Card(
               elevation: 3,
               child: ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                    "http://127.0.0.1:8000/${room['photo']}",
+                    "http://127.0.0.1:8000${room['photo']}",
                     width: 55,
                     height: 55,
                     fit: BoxFit.cover,
@@ -39,9 +46,9 @@ class RoomScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text(room['name']),
-                subtitle: Text("${room['faculty_name']} • Kapasitas ${room['capacity']}"),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {},
+                subtitle: Text(
+                  "${room['faculty_name']} • Kapasitas ${room['capacity']}",
+                ),
               ),
             );
           },
